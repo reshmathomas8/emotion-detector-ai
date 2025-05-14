@@ -1,4 +1,5 @@
 import requests  
+import json
 
 def emotion_detector(text_to_analyse): 
     # Define the URL for the emotion detector API
@@ -13,5 +14,24 @@ def emotion_detector(text_to_analyse):
     # Make a POST request to the API with the payload and headers
     response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
 
-    # return the response from the API
-    return response.text
+    # Parsing the JSON response from the API
+    formatted_response = json.loads(response.text)
+    
+    # Extracting sentiment label and score from the response
+    emotions =  formatted_response['emotionPredictions'][0]['emotion']
+    anger_score = emotions['anger']
+    disgust_score = emotions['disgust']
+    fear_score = emotions['fear']
+    joy_score = emotions['joy']
+    sadness_score = emotions['sadness']
+    dominant_emotion = max(emotions, key= emotions.get)
+    
+    # Returning a dictionary containing sentiment analysis results
+    return {
+        'anger': anger_score,
+        'disgust': disgust_score,
+        'fear': fear_score,
+        'joy': joy_score,
+        'sadness': sadness_score,
+        'dominant_emotion': dominant_emotion
+    }
